@@ -1,6 +1,6 @@
 
 
-resource "confluent_kafka_cluster" "staging-cluster" {
+resource "confluent_kafka_cluster_v2" "staging-cluster" {
   display_name = "Dedicated_Cluster_by_TF"
   availability = "MULTI_ZONE"
   cloud        = "AWS"
@@ -10,20 +10,21 @@ resource "confluent_kafka_cluster" "staging-cluster" {
   }
 
   environment {
-    id = data.confluent_environment.staging.id
+    id = data.confluent_environment_v2.staging.id
   }
 
   network {
-    id = var.network_id
+    id = data.terraform_remote_state.network.outputs.PrivateLink
+
   }
 }
 
 
 
 output "bootstrap_endpoint" {
-  value = confluent_kafka_cluster.staging-cluster.bootstrap_endpoint
+  value = confluent_kafka_cluster_v2.staging-cluster.bootstrap_endpoint
 }
 
 output "cluster_id" {
-  value = confluent_kafka_cluster.staging-cluster.id
+  value = confluent_kafka_cluster_v2.staging-cluster.id
 }
