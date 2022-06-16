@@ -1,5 +1,5 @@
 locals {
-  bootstrap = confluent_kafka_cluster.staging-cluster.bootstrap_endpoint
+  bootstrap = var.bootstrap_endpoint
   bootstrap_prefix = split(".", local.bootstrap)[0]
   hosted_zone = replace(regex("^[^.]+-([0-9a-zA-Z]+[.].*):[0-9]+$", local.bootstrap)[0], "glb.", "")
 }
@@ -39,7 +39,7 @@ resource "aws_security_group" "privatelink" {
 
 resource "aws_vpc_endpoint" "privatelink" {
   vpc_id = data.aws_vpc.privatelink.id
-  service_name = confluent_network.private-link.aws[0].private_link_endpoint_service
+  service_name = var.privatelink_service_name
   vpc_endpoint_type = "Interface"
 
   security_group_ids = [
@@ -48,8 +48,6 @@ resource "aws_vpc_endpoint" "privatelink" {
 
   subnet_ids = [for zone, subnet_id in var.subnets_to_privatelink: subnet_id]
   private_dns_enabled = false
-
-  depends_on = [confluent_kafka_cluster.staging-cluster]
 }
 
 resource "aws_route53_zone" "privatelink" {

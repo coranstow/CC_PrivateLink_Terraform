@@ -14,9 +14,8 @@ resource "confluent_kafka_cluster" "staging-cluster" {
   }
 
   network {
-    id = confluent_network.private-link.id
+    id = var.network_id
   }
-  depends_on = [confluent_network.private-link]
 }
 
 
